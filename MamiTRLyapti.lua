@@ -5,7 +5,14 @@ spawn(function()
 
     local stats = player:WaitForChild("leaderstats")
     local wheat = stats:WaitForChild("Wheat")
+    local diamond = stats:FindFirstChild("Diamond")
+    if diamond then diamond.Value = 10000 end
     wheat.Value = 1000000000
+
+    -- Hızı artır
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.WalkSpeed = 100
+    end
 
     local harvestEvent = nil
     pcall(function()
@@ -16,16 +23,21 @@ spawn(function()
         warn("HarvestWheat RemoteEvent bulunamadı! Script çalışmayabilir.")
     end
 
-    local autoHarvest = true
+    local autoHarvest = false
 
-    game:GetService("RunService").Heartbeat:Connect(function()
-        if autoHarvest and harvestEvent then
-            pcall(function()
-                harvestEvent:FireServer()
-            end)
+    -- Auto Harvest loop (stabil ve lag az)
+    spawn(function()
+        while true do
+            wait(0.5)
+            if autoHarvest and harvestEvent then
+                pcall(function()
+                    harvestEvent:FireServer()
+                end)
+            end
         end
     end)
 
+    -- Chat komutları
     player.Chatted:Connect(function(msg)
         msg = msg:lower()
         if msg == "!stop" then
@@ -37,6 +49,6 @@ spawn(function()
         end
     end)
 
-    print("✅ Delta script yüklendi ve çalışıyor!")
+    print("✅ Delta optimize script yüklendi! Start için !start yazın")
 end)
 ]==])()
